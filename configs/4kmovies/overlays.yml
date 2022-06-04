@@ -1,0 +1,181 @@
+# Trash Guides naming scheme and custom formats are recommended, as many overlays utilize filepath searching --> https://trash-guides.info/Radarr/Radarr-recommended-naming-scheme/
+templates:
+  ov:
+    overlay:
+      name: <<overlay_name>>
+      url: https://raw.githubusercontent.com/bradmartti/Plex-Meta-Manager-Configs/master/bradmartti/overlays/<<overlay_name>>.png
+      group: <<g>>
+      weight: <<w>>
+      horizontal_offset: <<x>>
+      vertical_offset: <<y>>
+  res:
+    plex_search:
+      all:
+        resolution: <<res>>
+  dr:
+    plex_search:
+      all:
+        hdr: <<hdr>>
+    filters:
+      has_dolby_vision: <<dv>>
+  lossy:
+    plex_all: true
+    filters:
+      filepath.regex: (?i)(AC3\b|\bOpus\b|MP3|PCM|AAC|DTS)(|-ES|-HD|-HD.HRA|.Atmos)(.<<ch>>\.)
+  lac:
+    plex_all: true
+    filters:
+      filepath.regex: (?i)(TrueHD|DTS-HD.MA|DTS-X|FLAC)(|.Atmos)(.<<ch>>\.)
+  regex:
+    plex_all: true
+    filters:
+      filepath.regex: (?i)<<regex>>
+
+overlays:
+# backdrop gradient to make overlays consistantly readable
+  Gradient:
+    template: { name: ov, g: gradient, w: 100, x: 0, y: 0 }
+    plex_all: true    
+
+# Charts\Ratings
+  #IMDB_rating_top_popular:
+   # template: { name: ov, g: charts, w: 4, x: 679, y: 1070 }
+   # imdb_chart: 
+   #   - top_movies 
+   #   - popular_movies
+  #  suppress_overlays:
+ #     - IMDB_rating_top
+ #     - IMDB_rating_popular
+  IMDB_rating_top:
+    template: { name: ov, g: charts, w: 3, x: 679, y: 1070 }
+    imdb_chart: top_movies
+  IMDB_rating_popular:
+    template: { name: ov, g: charts, w: 2, x: 679, y: 1070 }
+    imdb_chart: popular_movies    
+  IMDB_rating:
+    plex_all: true 
+    template: { name: ov, g: charts, w: 1, x: 679, y: 1370 }
+  critic_rating:
+    plex_all: true
+    overlay:
+      name: text(critic_rating)
+      horizontal_offset: 755
+      vertical_offset: 1398
+      font: fonts/Inter-SemiBold.ttf
+      font_size: 52
+      font_color: "#FFFFFF"
+
+# Source Quality (Enabling renaming of LQ, HQ, HQ-WEBDL, and HQ-Remux source quality formats is required for quality grouping. --> https://trash-guides.info/Radarr/Radarr-collection-of-custom-formats/)
+  # Unknown Quality (white)
+  WEBDL:
+    template:
+      - { name: ov, g: s, w: 1, x: 40, y: 1375 }
+      - { name: regex, regex: ^(?!.*\bHQ\b).*(\bWEBDL) }
+  Bluray:
+    template:
+      - { name: ov, g: s, w: 2, x: 40, y: 1375 }
+      - { name: regex, regex: ^(?!.*\bHQ\b).*(\bBluray) }
+  # Remux:
+  #   template:
+  #     - { name: ov, g: s, w: 3, x: 40, y: 1375 }
+  #     - { name: regex, regex: ^(?!.*\bHQ\b).*(\bRemux) }
+  #   suppress_overlays: Bluray
+
+  # Low Quality (red)
+  LQ-WEBDL:
+    template:
+      - { name: ov, g: lsq, w: 1, x: 40, y: 1375 }
+      - { name: regex, regex: (\bLQ\b).*(\bWEBDL) }
+  LQ-Bluray:
+    template:
+      - { name: ov, g: lsq, w: 2, x: 40, y: 1375 }
+      - { name: regex, regex: (\bLQ\b).*(\bBluray) }
+  LQ-Remux:
+    template:
+      - { name: ov, g: lsq, w: 3, x: 40, y: 1375 }
+      - { name: regex, regex: (\bLQ\b).*(\bRemux) }
+    suppress_overlays: LQ-Bluray
+
+
+
+# Resolution
+  # standard/low definition (red)
+#  SD:
+#    template:
+#      - { name: ov, g: res, w: 1, x: 200, y: 40 }
+#      - { name: res, res: 720p, 480p }
+  # full hd (white)
+#  FHD:
+#    template:
+#      - { name: ov, g: res, w: 1, x: 200, y: 40 }
+#      - { name: res, res: 1080p }
+  # ultra hd (green)
+#  UHD:
+#    template:
+#      - { name: ov, g: res, w: 1, x: 200, y: 40 }
+#      - { name: res, res: 4K }
+
+# Dynamic Range
+  # standard dynamic range (white)
+#  SDR:
+#    template:
+#      - { name: ov, g: dr, w: 1, x: 40, y: 40 }
+#      - { name: dr, hdr: false, dv: false }
+  # high dynamic range (green)
+  HDR-green: # for cases where filenames aren't present
+    template:
+      - { name: ov, g: dr, w: 1, x: 40, y: 40 }
+      - { name: dr, hdr: true, dv: false }
+  PQ10-green:
+    template:
+      - { name: ov, g: dr, w: 1, x: 40, y: 40 }
+      - { name: regex, regex: (\bPQ\b) }
+    suppress_overlays: HDR-green
+  HDR10-green:
+    template:
+      - { name: ov, g: dr, w: 1, x: 40, y: 40 }
+      - { name: regex, regex: ^(?!.*DV|DoVi).*(HDR10) }
+    suppress_overlays: HDR-green
+  HDR10Plus-green:
+    template:
+      - { name: ov, g: dr, w: 1, x: 40, y: 40 }
+      - { name: regex, regex: ^(?!.*DV|DoVi).*(HDR10Plus) }
+    suppress_overlays: 
+      - HDR-green
+      - HDR10-green
+  DV-green: 
+    template:
+      - { name: ov, g: dr, w: 1, x: 40, y: 40 }
+      - { name: dr, hdr: false, dv: true }
+      - { name: regex, regex: ^(?!.*HDR).*(DV|DoVi) }
+  4K-Dolbyy:
+    template:
+      - { name: ov, g: dr, w: 1, x: 40, y: 40 }
+      - { name: regex, regex: (DV|DoVi).*(HDR10) }
+    suppress_overlays: 
+      - DV-green
+      - HDR-green
+
+# Edition Tags (blue)
+  # IMAX:
+  #   template:
+  #     - { name: ov, g: ed, w: 5, x: 40, y: 40 }
+  #     - { name: regex, regex: (\bIMAX\b) }
+  #     suppress_overlays: 
+  #      -4K-Dolbyy
+  Criterion:
+    template:
+      - { name: ov, g: ed, w: 4, x: 314, y: 1375 }
+      - { name: regex, regex: (\bCriterion.Collection\b) }
+  Remastered:
+    template:
+      - { name: ov, g: ed, w: 3, x: 314, y: 1375 }
+      - { name: regex, regex: (\bRemastered\b) }
+  Special_ED:
+    template:
+      - { name: ov, g: ed, w: 2, x: 314, y: 1375 }
+      - { name: regex, regex: (\bSpecial.Edition\b) }
+  Extended:
+    template:
+      - { name: ov, g: ed, w: 1, x: 314, y: 1375 }
+      - { name: regex, regex: (\bExtended\b) }
